@@ -1,0 +1,141 @@
+常见单词整理：
+Terminal ： 终端                        network-scripts： 网络脚本   
+passwd :：密码文件 	         nologin ：禁止登录    
+shutdown ：关机                        reboot ：重启   
+poweroff ：关机	       Grep ：过滤    
+localhost ：本机     	       useradd： 添加用户   
+graphical ：图形
+
+提示符“#”号与“$”号的区别：
+[root@xuegod72 ~]#         ---表示是root用户登录，管理员账号登陆
+[miao@xuegod72 ~]$	 ---表示普通用户登录	
+
+查看所有的解释器:
+[root@xuegod72 ~]# cat /etc/shells
+
+命令格式如下：
+命令字 【参数】【选项】
+q	命令字： 具体执行的命令
+q	选项：命令处理的对象。
+q	参数：匹配条件
+
+
+基本命令之--ls
+作用：查看当前目录下有哪些文件
+语法：ls 目录 ，如果不加目录查看当前目录
+常用参数：
+q	-l 显示详细信息　注：系统里面的快捷方式#ll=ls -l
+q	-a显示隐藏文件　	
+q	-d 查看目录(不查看里面的内容)
+ 
+ 
+上面显示的内容中第一个字母，
+q	d：目录文件
+q	l：链接文件
+q	b：块设备文件
+q	c：字符设备文件
+q	p：管道文件
+q	-: 表示普通文件
+其中sh -l 和 ll 是等价的
+
+linux系统中不同的颜色代表了不同的文件类型
+ 
+颜 色	代表内容	举 例	   
+蓝色	目录	/etc	   
+黑色	文件	/etc/passwd
+	   
+浅蓝色	链接	/etc/grub2.cfg	   
+红色	压缩包	boot.tar.gz
+	   
+绿色	可执行文件	/etc/init.d/network	   
+黑底黄字	设备文件	/dev/sda	 
+
+
+基本命令之--pwd
+作用：打印当前用户所在的当前目录位置
+语法：直接输入pwd
+ 
+
+基本命令之--cd
+作用：切换目录
+语法：cd 目录
+说明：
+q	直接输入cd表示回到当前用户的宿主目录
+q	cd ..  表示返回到上级目录位置
+
+
+
+在Linux中有硬件时钟与系统时钟等两种时钟。硬件时钟是指主机板上的时钟设备，也就是通常可在BIOS画面设定的时钟；系统时钟则是指kernel中 的时钟；所有Linux相关指令与函数都是读取系统时钟的设定
+读取主板时钟命令：hwclock 
+读取系统时钟命令：date
+修改系统时钟命令：date -s xxxx-xx-xx
+修改系统时钟格式：date '+%Y-%m-%d %H:%M' 
+
+
+帮助命令使用
+	遇到命令不知道添加哪个参数，可以使用命令帮助查看相关介绍，常用的查看帮助信息命令有如下几个
+man  <命令> 查看手册页或命令描述
+
+关机命令
+常用的几个关机命令
+q	shutdown
+q	init
+q	reboot   
+q	poweroff
+关机命令之--shutdown
+作用：关机，重启，定时关机
+语法：shutdown  [选项]
+参数：
+q	-r    => 重新启动计算机
+q	-h    => 关机
+q	-h + 时间  =>定时关机
+q	[root@xuegod72 ~]# shutdown -h +10(10分钟之后关机)
+q	[root@xuegod72 ~]# shutdown -h 23:30(指定具体的时间点进行关机)
+[root@xuegod72 ~]# shutdown -h now(立即关机)
+[root@xuegod72 ~]#shutdown -r  22：22 (22:22 以后重启)   
+关机命令之--init 命令
+作用：切换系统运行级别
+语法：init  0-6
+Linux 7个启动级别：
+q	0 系统停机模式，系统默认运行级别不能设置为0，否则不能正常启动，机器关
+q	1 单用户模式，root权限，用于系统维护，禁止远程登陆，就像Windows下的安全模式登录
+q	2 多用户模式，没有NFS网络支持
+q	3 完整的多用户文本模式，有NFS，登陆后进入控制台命令行模式
+q	4 系统未使用，保留一般不用，在一些特殊情况下可以用它来做一些事情。例如在笔记本电脑的电池用尽时，可以切换到这个模式来做一些设置
+q	5 图形化模式，登陆后进入图形GUI模式，X Window系
+q	6 重启模式，默认运行级别不能设为6，否则不能正常启动。运行init 6机器就会重启
+查看启动级别：runlevel
+ 
+启动级别配置：
+	RHEL7不再使用/etc/inittab文件进行默认的启动级别配置，systemd使用比sysvinit的运行级更为自由的target替代。
+q	第3运行级用multi-user.target替代
+q	第5运行级用graphical.target替代
+	runlevel3.target和runlevel5.target分别是指向 multi-user.target和graphical.target的符号链接。
+进行切换
+切换到第3运行级
+[root@localhost ~]# systemctl isolate multi-user.target
+或
+[root@localhost ~]# systemctl isolate runlevel3.target
+ 
+设置默认的运行界别
+设置默认第三启动级别
+[root@xuegod60 ~]# systemctl set-default multi-user.target
+Removed symlink /etc/systemd/system/default.target.
+Created symlink from /etc/systemd/system/default.target to /usr/lib/systemd/system/multi-user.target.
+查看当前默认的启动级别，如下图：
+ 
+或者可以看这个文件：/etc/inittab  (RHEL6使用该文件经行修改系统启动级别,重启生效)
+ 
+
+[root@xuegod60 ~]# systemctl get-default
+graphical.target
+
+
+
+
+
+
+
+
+
+
