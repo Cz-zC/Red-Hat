@@ -1,0 +1,51 @@
+防火墙关闭：iptables -F
+查看：iptables -nL
+将防火墙规则保存到/etc/init.d/iptables目录下：/etc/init.d/iptables save
+（init.d的介绍 https://blog.csdn.net/liudongdong19/article/details/79774171）
+
+
+查看selinux（https://blog.csdn.net/yanjun821126/article/details/80828908）是否开启：getenforce（一般把这个功能关闭）
+ 
+关闭命令：setenforce 0
+ 
+但是这样只是把他改为监听模式，并没完全关闭。
+
+永久关闭selinux：
+vim /etc/sysconfig/selinux
+ 
+将开机自启的enforce改成disabled，保存退出后，再将其重启，即可完成设置
+
+光盘挂载设置（相当于光盘的弹出/弹入）
+查看挂载情况：df -h
+ 
+他挂载到了media的下面
+
+(自动挂载文件/etc/fstab功能详解  https://www.cnblogs.com/qiyebao/p/4484047.html)
+需要将他卸载了，然后重新挂载
+卸载（弹出光盘）：unmount /dev/sr0
+再挂载（将光盘弹入）：vim /etc/fstable( /etc/fstable 文件里写了所有开机时系统需要挂载的东西 )
+ 
+自动挂载/etc/fstab里的东西：mount -a
+
+查看挂载情况（包括Type的）：df -Th
+ 
+
+YUM源（源相当于软件包的合集）
+yum在/etc/yum.repos.d/里面：cd /etc/yum.repos.d/
+将里面的东西都删掉：rm -f *
+然后查看是否还有东西：ls（列出当先文件下的所有文件）
+编辑一个文件：vim cdrom.repo(只有.repo的后缀，Linux才能识别出，这个文件是yum源的配置文件)
+[rhel7-source]        名称
+name=rhel-server     描述信息
+baseurl=file:///mnt     (系统盘)文件路径
+enabled=1   启用
+gpgcheck=0   取消验证
+
+
+设置好了新的yum源，需要清理之前的缓存：yum clean all
+ 
+
+清理完了，就要将yum源重新导入：yum repolist 
+
+然后就可以安装需要的软件：yum install xxxxx
+
