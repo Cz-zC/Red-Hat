@@ -1,0 +1,175 @@
+VIM安装
+ 
+
+查询命令属于哪个软件：
+ 
+
+查询文件：
+ 
+
+首次进入文件  ---- 命令模式
+出现 Insert   ---- 编辑模式
+输入:         ---- 命令行模式
+
+A：从编辑模式到命令行模式怎样切换?
+	编辑模式->esc->命令模式->: ->命令行模式
+B：字符操作(怎样进入编辑模式?)
+	进入编辑模式 a i o  A I O
+说明：
+q	i 当前字符之前插入 (光标前)
+q	I 行首插入  (行首)
+q	a 当前字符之后插入 (光标后)
+q	A 行尾插入(行尾)
+q	o下一行插入 (另起一行)
+q	O上一行插入(上一行插入)
+q	x 向后删除一个字符		等同于delete
+q	X 向前删除一个字符     	
+q	u 撤销一步   每按一次就撤销一次
+q	r 替换
+行操作
+输入home键 或 ^ (shift +6) 将光标移动到当前的行首 
+输入end键 或 $ (shift +4) 将光标移动到当前的行尾  
+
+删除行
+	dd 删除一行 数字+dd  删除多行  :
+	删除光标后全部内容 d+G  
+
+显示行号：set nu
+
+复制粘贴
+	yy 复制一行  数字+yy 复制N行
+	p  将复制行粘贴
+
+扩展：剪切
+	先删除，再粘贴
+	删除到行首  d + HOME  或 ^ (shift+6)
+	删除到行尾  d + END    或 $ (shift+4)
+
+显示行号：在命令行模式下，set nu
+
+V模式
+进入v模式 移动光标选择区域、
+编程的时候需要进行多行注释：
+	1)、ctrl+v 进入列编辑模式
+	2)、向下或向上移动光标
+	3)、把需要注释的行的开头标记起来
+	4)、然后按大写的I
+	5)、再插入注释符,比如"#"
+	6)、再按Esc,就会全部注释了
+删除：再按ctrl+v 进入列编辑模式；向下或向上移动光标 ；选中注释部分,然后按d, 就会删除注释符号。
+VIM命令行模式操作
+Ø	:w 保存 save
+Ø	:q 没有进行任何修改，退出 quit
+Ø	:q! 修改了，不保存，强制退出
+Ø	:wq 保存并退出 
+Ø	:wq! 强制保存并退出
+Ø	:x 保存退出
+Ø	ZZ 保存退出
+调用外部文件或命令
+假设：我想要编辑写入我的网卡地址,但是我忘记了,我要查看一下,当前在vim编辑文档
+怎么办呢? 要退出文档吗? 这样好麻烦.
+在命令行模式下操作：
+Ø	:!ifconfig	调用系统命令
+Ø	!+命令
+
+替换（命令行模式）
+格式 : %所有内容 s替换  旧的内容 新的内容  
+默认是每一行的第一个符合要求的词   (/g全部)
+
+:% s/a/b 每一行的第一个a被替换成b
+:% s/a/b/g	将文本中所有的1替换成5
+
+只替换某几行内容
+:2,3 s/a/b
+/g  全部
+#替换2到3行 的5
+
+我们怎么知道是第二行还是第三行呢?
+:set nu     #显示行号
+:set nonu   #不显示行号
+
+查找
+/ 正向查找  ：/san     n 往下查找，N 往上查找
+ 
+定位
+vim中定位到某行：
+到命令模式下操作  gg  定位到文件首行
+到命令模式下操作  G  定位到文件尾行
+在命令行模式下操作 :#	定位到某一行 （#表示行号）
+
+  
+读取其他文件
+在命令行模式下
+:r /etc/passwd
+保存退出  :wq
+
+修改vim的配置文件：vim /etc/vimrc
+如果想打开vim就显示行号，就在vimrc的最后加入set nu
+
+vim打开多个文件：
+[root@xuegod72 ~]# vim -o /etc/passwd /etc/hosts
+[root@xuegod72 ~]# vim -O /etc/passwd /etc/hosts
+ctrl+ww  在文件之间进行切换
+大写O左右分屏，小写的o上下分屏
+ 
+ 
+
+
+比较文件内容
+vimdiff  文件A 文件B
+
+开启ssh功能：
+如果是开启的，ssh才能登录
+查看ssh运行状态：service sshd status
+ 
+如果是关闭的，就使用以下命令开启:
+/etc/init.d/sshd start
+
+lrzsz（Linux服务器和window互传文件工具）
+https://blog.csdn.net/wuzhangweiss/article/details/79842283
+需要在里面安装lrzsz
+yum install lrzsz -y
+
+
+
+
+乱码解决
+环境准备：
+在Windows中编辑好的汉字文本文档，上传到Linux下，打开是乱码
+使用乱码解决工具：iconv
+首先确定是否安装ICONV：
+[root@qiaolima ~]# rpm -qf `which iconv`
+
+
+如果没安装，用下面的明亮安装
+先安装yum install wget
+去镜像站http://mirrors.geekfan.top/
+安装下列这条命令更新：
+wget -O /etc/yum.repos.d/geekfan.repo http://mirrors.geekfan.top/YUM/centos6-source.repo
+
+
+[root@qiaolima ~]# rpm -ihv /mnt/Packages/glibc-common-2.17-105.el7.x86_64.rpm
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
