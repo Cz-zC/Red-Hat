@@ -1,3 +1,5 @@
+1-2
+centos 6
 防火墙关闭：iptables -F
 查看：iptables -nL
 将防火墙规则保存到/etc/init.d/iptables目录下：/etc/init.d/iptables save
@@ -30,6 +32,29 @@ vim /etc/sysconfig/selinux
 查看挂载情况（包括Type的）：df -Th
  
 
+centos 7
+1、禁止开机启动防火墙：systemctl disable firewalld
+ 
+
+关闭防火墙：systemctl stop firewalld
+ 
+2、关闭selinux
+获取状态：getenforce
+ 
+关闭他：setenforce 0
+ 
+到配置文件里面改： vim /etc/selinux/config
+把permissive改为disabled
+3、挂在光盘(和centos6基本一样)
+需要将他卸载了，然后重新挂载
+卸载（弹出光盘）：unmount /dev/sr0
+再挂载（将光盘弹入）：vim /etc/fstable( /etc/fstable 文件里写了所有开机时系统需要挂载的东西 )
+
+自动挂载/etc/fstab里的东西：mount -a
+
+查看挂载情况（包括Type的）：df -Th
+
+
 YUM源（源相当于软件包的合集）
 yum在/etc/yum.repos.d/里面：cd /etc/yum.repos.d/
 将里面的东西都删掉：rm -f *
@@ -45,7 +70,13 @@ gpgcheck=0   取消验证
 设置好了新的yum源，需要清理之前的缓存：yum clean all
  
 
-清理完了，就要将yum源重新导入：yum repolist 
+清理完了，就要将yum源重新导入：yum repolist
+
+ 
 
 然后就可以安装需要的软件：yum install xxxxx
+
+
+
+
 
