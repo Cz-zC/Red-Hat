@@ -198,10 +198,12 @@ Complete!
 首先关闭SELINUX
 然后重启，按↑↓键，进入如下界面，选择第一项，按下e键进行编辑
  
-在此界面找到ro这一项，并进行修改，改为rw  init=/sysroot/bin/sh
- 
+在此界面找到Linux16的这一行，在utf-8 后面写一句话：rd.break
 改完之后，按下Ctrl+X进入紧急模式
 原理：启动一个shell环境，系统并没有真正的启动
+ 
+命令mount看sysroot的读写状态
+通过mount -o remount,rw /sysroot改写stsroot的状态
  
 换根，修改密码
 注：当前目录默认是根（/）
@@ -209,7 +211,7 @@ chroot命令用来在指定的根目录下运行指令
 chroot，即 change root directory （更改 root 目录）。在 linux 系统中，系统默认的目录结构都是以/，即是以根 (root) 开始的。而在使用 chroot 之后，系统的目录结构将以指定的位置作为/位置
 在经过 chroot 命令之后，系统读取到的目录和文件将不在是旧系统根下的而是新根下（即被指定的新的位置）的目录结构和文件，
  
-如何之前系统启用了selinux，必须运行以下命令，否则将无法正常启动系统：touch /.autorelabel
+如何之前系统启用了selinux，必须运行以下命令，否则将无法正常启动系统：touch /.autorelabel（开机进行重新诊断和检测）
 重启系统
 先退出当前根，执行/bin/sh shutdown –r now
  
@@ -220,7 +222,8 @@ RHEL6恢复root密码
  
 输入空格 1，进入单用户模式
  
-回车àb
+回车
+b
  
  
 
