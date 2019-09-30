@@ -1,0 +1,232 @@
+用户账号:
+超级用户： root至高无上
+本地用户：由管理员创建,权限受到一定的限制,在自己的宿主目录是完整的权限.
+系统用户：一般是不会登录系统的,用于维持某个服务程序正常运行.（应用程序用户）
+问题：在windows里面，administrator用户是不是最高权限用户？
+不是
+用户的分类
+根据帐号的位置：本地帐号、远程（域）帐号。  LDAP，NIS域服务器
+根据帐号的功能：超级用户（root）　　UID：0
+普通用户又分下面两种：
+系统用户  UID：1－999    rhel6中是1-499，它一般是系统内建的账号，不用于登录操作系统，它主要是为了满足自身系统管理需要而建,也叫伪用户
+伪用户： 与系统和程序服务有关，比如：bin、daemon、通常不需要或无法登录系统可以没有宿主目录
+本地用户  UID：1000+    rhel6 中是500以上，也叫自定义用户，由root管理员创建，供用户登陆进行操作
+说明：UID即每个用户的身份标示,类似于每个人的身份证号码.
+配置文件
+ 
+名 称	帐号信息	密码信息	密码文件说明	   
+用户信息文件	/etc/passwd	/etc/shadow	包含passwd里面用户对应的密码信息	   
+用户组文件	/etc/group	/etc/gshadow	包含组加密信息	 
+
+添加用户
+语法：useradd  用户名
+常用参数：
+q	-u		UID
+q	-d		宿主目录
+q	-g		起始组		 #只能有一个
+q	-G		附加组		 #可以有多个
+q	-s		登陆shell
+一个用户只能属于一个起始组，一个起始姐可以包含多个用户
+ 
+
+ 
+用户帐户的全部信息被保存在/etc/passwd文件。这个文件以如下格式保存了每一个系统帐户的所有信息 (字段以“:”分割)
+/etc/passwd  每个字段的作用：
+[root@xuegod72 ~]# head -1 /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+用户名 : 密码占位符 : UID : GID  : 用户描述 : 用户主目录（bash中"~"代表那个） : 登录后使用的shell
+ 
+linux中任何一个命令的操作都必须有一个用户的身份
+指定用户UID
+ 
+指定用户的宿主目录
+ 
+ 
+指定用户的起始组
+
+ 
+ 
+ 指定用户附加组
+ 
+ 
+指定用户的登录shell
+ 
+创建用户的另外的命令
+ 
+useradd 和 adduser 使用的参数的一样的
+删除用户
+语法：userdel 【参数】用户名
+参数： -r   抄家   连同宿主目录一起
+ 
+密码的文件
+位置：/etc/shadow
+添加密码：
+ 
+列说明：
+root:$6$.BTyNB8Q397zR.KY$412……M8ZHWiidd/:16274: 0 : 99999 : 7 :   :   :
+ 
+另外一种添加密码
+ 
+修改用户信息
+语法：usermod 【参数】用户名
+常用参数：	
+q	-u		UID
+q	-d		宿主目录
+q	-g		起始组				#只能有一个
+q	-G		附加组				#可以有多个
+q	-s		登录shell
+举例如下：
+修改UID
+ 
+修改shell
+ 
+修改起始组
+ 
+组分类
+根据帐号的位置：本地组、远程（域）组  比如LADP、 NIS
+根据帐号的功能：超级用户组（root）　　GID：0
+　　　　　　　　普通用户组 
+　　　　　　　　系统用户组  GID：1－999  redhat6 是1-499
+　　　　　　　　本地用户 组 GID：1000＋  redhat6 是500+
+组的配置文件
+/etc/group（组的名字）
+rm:x:1000:rm
+
+ 
+ 
+添加组
+groupadd xx
+ 
+删除组
+groupdel xx
+ 
+
+ 
+控制添加用户规则的文件
+当添加新的用户帐户时，默认会执行下列操作
+·	它的主目录就会被创建(一般是"/home/用户名"，除非你特别设置)
+·	一些隐藏文件 如.bash_logout, .bash_profile 以及 .bashrc 会被复制到用户的主目录。
+·	会创建一个和用户名同样的组（注：除非你给新创建的用户指定了组）
+解决模板文件被删之后显示不正常的问题
+环境准备	
+[root@xuegod72 home]# ls -a /home/bajie
+.  ..  .bash_logout  .bash_profile  .bashrc  .mozilla
+[root@xuegod72 home]# cd bajie/
+[root@xuegod72 bajie]# ls
+[root@xuegod72 bajie]# rm -rf *
+[root@xuegod72 bajie]# ls -a
+.  ..  .bash_logout  .bash_profile  .bashrc  .mozilla
+ [root@xuegod72 bajie]# rm -rf .bash*
+[root@xuegod72 bajie]# ls -a
+.  ..
+[root@xuegod72 bajie]# exit
+logout
+There are stopped jobs.
+[root@xuegod72 bajie]# cd
+[root@xuegod72 ~]# 
+[root@xuegod72 ~]# 
+[root@xuegod72 ~]# su - bajie
+-bash-4.2$
+恢复：
+[root@xuegod72 ~]# cp /etc/skel/.bash* /home/bajie
+[root@xuegod72 ~]# ls -a /home/bajie
+.   .bash_history  .bash_profile  .cache
+..  .bash_logout   .bashrc        .config
+[root@xuegod72 ~]# su - bajie
+Last login: Wed Oct 12 21:58:31 CST 2016 on pts/2
+[bajie@xuegod72 ~]$
+注：
+q	加上 - ，在切换时会把环境变量一起进行切换
+q	不加 -，保留原本的环境变量
+ 
+查看用户信息相关命令：
+id ：显示当前有效用户的UID和GID信息
+ 
+w：用于显示已经登录系统的用户列表，并显示正在执行的指令与程序
+ who：显示目前登录系统的用户信息
+ 
+whoami：打印当前有效的用户名称
+ 
+ 
+finger：查找并显示用户信息
+安装包：yum -y install finger
+Loaded plugins: langpacks, product-id, search-disabled-repos,
+              : subscription-manager
+This system is not registered to Red Hat Subscription Management. You can use subscription-manager to register.
+base                                              | 4.1 kB     00:00     
+(1/2): base/group_gz                                | 136 kB   00:00     
+(2/2): base/primary_db                              | 3.6 MB   00:00     
+Resolving Dependencies
+--> Running transaction check
+---> Package finger.x86_64 0:0.17-52.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+=========================================================================
+ Package        Arch           Version                Repository    Size
+=========================================================================
+Installing:
+ finger         x86_64         0.17-52.el7            base          26 k
+
+Transaction Summary
+=========================================================================
+Install  1 Package
+
+Total download size: 26 k
+Installed size: 32 k
+Downloading packages:
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : finger-0.17-52.el7.x86_64                             1/1 
+base/productid                                    | 1.6 kB     00:00     
+  Verifying  : finger-0.17-52.el7.x86_64                             1/1 
+
+Installed:
+  finger.x86_64 0:0.17-52.el7                                            
+
+Complete!
+ 
+  
+为什么Cz用户不能登录：是因为被禁了。
+ 
+将他改为可登录的即可。
+ 
+实战：RHEL7恢复root密码
+首先关闭SELINUX
+然后重启，按↑↓键，进入如下界面，选择第一项，按下e键进行编辑
+ 
+在此界面找到ro这一项，并进行修改，改为rw  init=/sysroot/bin/sh
+ 
+改完之后，按下Ctrl+X进入紧急模式
+原理：启动一个shell环境，系统并没有真正的启动
+ 
+换根，修改密码
+注：当前目录默认是根（/）
+chroot命令用来在指定的根目录下运行指令
+chroot，即 change root directory （更改 root 目录）。在 linux 系统中，系统默认的目录结构都是以/，即是以根 (root) 开始的。而在使用 chroot 之后，系统的目录结构将以指定的位置作为/位置
+在经过 chroot 命令之后，系统读取到的目录和文件将不在是旧系统根下的而是新根下（即被指定的新的位置）的目录结构和文件，
+ 
+如何之前系统启用了selinux，必须运行以下命令，否则将无法正常启动系统：touch /.autorelabel
+重启系统
+先退出当前根，执行/bin/sh shutdown –r now
+ 
+RHEL6恢复root密码
+上下键停留在此界面
+ 
+按小写的e  编辑
+ 
+输入空格 1，进入单用户模式
+ 
+回车àb
+ 
+ 
+
+
+
+
+
+
+
