@@ -1,0 +1,528 @@
+软件包的管理
+软件包的分类
+源码包
+二进制包
+	--RPM包
+主要有RPM和YUM这两种包管理。
+两种包管理各有用处，其中主要区别是：
+YUM使用简单，可以本地使用也可联网，网络YUM源，就是YUM会去网上的YUM包源去获取所需要的软件包。而RPM的需要的操作精度比较细，需要我们做的事情比较多。
+rpm软件包管理：
+简称: Redhat Package Manager
+挂载光盘
+[root@xuegod72 ~]# umount /dev/sr0   卸载
+卸载前，你要退出当前目录
+[root@xuegod72 ~]# mount /dev/sr0 /mnt/   挂载
+查看包的个数
+ 
+
+
+ rpm包说明：
+zsh-5.0.2-14.el7.x86_64.rpm 		    		
+ 
+zsh	-5	.0	.2	14	-e17	x86	64	   
+软件名	主版本号	次版本号	修订号	发布次数	RHEL7	CPU架构平台	支持系统位数	 
+注：EL6 EL5
+安装rpm软件
+命令：rpm [参数] 软件包
+参数：
+q	-i, --install              安装软件包
+q	--nodeps               不验证软件包依赖，也就是说不检测依赖性
+q	-v, --verbose            提供更多的详细信息输出
+q	-V 校验               对已安装的软件包进行校验
+q	-h, --hash              软件包安装的时候列出哈希标记，显示进度
+再安装以前，要给大家说一下什么情况下使用软件包全名，什么时候使用软件包名？
+l	全名：在安装和更新升级时候使用
+l	包名：对已经安装过的软件包进行操作时，比如查找已经安装的某个包，卸载包等 ，使用包名。它默认是去目录/var/lib/rpm下面进行搜索
+例1-	正常包安装
+[root@qiaolima]# cd /mnt/Packages/
+[root@qiaolima Packages]# rpm -ivh zsh-5.0.2-14.el7.x86_64.rpm 
+警告：zsh-5.0.2-14.el7.x86_64.rpm: 头V3 RSA/SHA256 Signature, 密钥 ID fd431d51: NOKEY
+准备中...                          ################################# [100%]
+正在升级/安装...
+   1:zsh-5.0.2-14.el7                 ################################# [100%]
+
+例2-	依赖关系的安装
+到rpm包相关的网站上去下载软件包
+http://rpmfind.net/   查询模块依赖的哪个包
+http://rpm.pbone.net/
+http://www.rpmseek.com/index.html
+
+[root@qiaolima Packages]# rpm -ivh httpd-2.4.6-40.el7.x86_64.rpm
+
+警告：httpd-2.4.6-40.el7.x86_64.rpm: 头V3 RSA/SHA256 Signature, 密钥 ID fd431d51: NOKEY
+错误：依赖检测失败：
+	/etc/mime.types 被 httpd-2.4.6-40.el7.x86_64 需要
+	httpd-tools = 2.4.6-40.el7 被 httpd-2.4.6-40.el7.x86_64 需要
+	libapr-1.so.0()(64bit) 被 httpd-2.4.6-40.el7.x86_64 需要
+	libaprutil-1.so.0()(64bit) 被 httpd-2.4.6-40.el7.x86_64 需要
+
+
+[root@qiaolima Packages]# rpm -ivh httpd-tools-2.4.6-40.el7.x86_64.rpm 
+警告：httpd-tools-2.4.6-40.el7.x86_64.rpm: 头V3 RSA/SHA256 Signature, 密钥 ID fd431d51: NOKEY
+错误：依赖检测失败：
+	libapr-1.so.0()(64bit) 被 httpd-tools-2.4.6-40.el7.x86_64 需要
+	libaprutil-1.so.0()(64bit) 被 httpd-tools-2.4.6-40.el7.x86_64 需要
+
+
+[root@qiaolima Packages]# rpm -ivh apr-1.4.8-3.el7.x86_64.rpm 
+
+警告：apr-1.4.8-3.el7.x86_64.rpm: 头V3 RSA/SHA256 Signature, 密钥 ID fd431d51: NOKEY
+准备中...                          ################################# [100%]
+正在升级/安装...
+   1:apr-1.4.8-3.el7                  ################################# [100%]
+
+[root@qiaolima Packages]# rpm -ivh apr-util-1.5.2-6.el7.x86_64.rpm 
+警告：apr-util-1.5.2-6.el7.x86_64.rpm: 头V3 RSA/SHA256 Signature, 密钥 ID fd431d51: NOKEY
+准备中...                          ################################# [100%]
+正在升级/安装...
+   1:apr-util-1.5.2-6.el7             ################################# [100%]
+
+
+[root@qiaolima Packages]# rpm -ivh httpd-tools-2.4.6-40.el7.x86_64.rpm 
+
+警告：httpd-tools-2.4.6-40.el7.x86_64.rpm: 头V3 RSA/SHA256 Signature, 密钥 ID fd431d51: NOKEY
+准备中...                          ################################# [100%]
+正在升级/安装...
+   1:httpd-tools-2.4.6-40.el7         ################################# [100%]
+
+
+[root@qiaolima Packages]# rpm -ivh httpd-2.4.6-40.el7.x86_64.rpm
+
+警告：httpd-2.4.6-40.el7.x86_64.rpm: 头V3 RSA/SHA256 Signature, 密钥 ID fd431d51: NOKEY
+错误：依赖检测失败：
+	/etc/mime.types 被 httpd-2.4.6-40.el7.x86_64 需要
+
+
+[root@qiaolima ~]# rpm -qf /etc/mime.types
+
+mailcap-2.1.41-2.el7.noarch
+
+
+
+
+rpm查询功能
+用法：rpm –q（query） 常与下面参数组合使用
+q	-a（all）  查询所有已安装的软件包
+q	-f（file）系统文件名（查询系统文件所属哪个软件包），反向查询
+q	-i  显示已经安装的rpm软件包信息
+q	-l（list）  查询软件包中文件安装的位置
+q	-p  查询未安装软件包的相关信息
+q	-R 查询软件包的依赖性
+通常可以配合管道 | more 来使用，使得结果更易读
+例1：查找(不一定要在Package目录下操作)
+[root@qiaolima ~]# rpm -q zsh
+zsh-5.0.2-14.el7.x86_64
+ 
+
+
+[root@qiaolima ~]# rpm -qa|grep vim
+（匹配vim关键字）
+ 
+
+例2：查看已经安装的软件包的信息
+[root@qiaolima ~]# rpm -qi zsh
+Name        : zsh
+Version     : 5.0.2
+Release     : 14.el7
+Architecture: x86_64
+Install Date: Tue 06 Dec 2016 08:53:45 PM CST
+Group       : System Environment/Shells
+Size        : 5834959
+License     : MIT
+Signature   : RSA/SHA256, Tue 06 Oct 2015 01:41:18 AM CST, Key ID 199e2f91fd431d51
+Source RPM  : zsh-5.0.2-14.el7.src.rpm
+Build Date  : Fri 14 Aug 2015 07:06:25 PM CST
+Build Host  : x86-035.build.eng.bos.redhat.com
+Relocations : (not relocatable)
+Packager    : Red Hat, Inc. <http://bugzilla.redhat.com/bugzilla>
+Vendor      : Red Hat, Inc.
+URL         : http://zsh.sourceforge.net/
+Summary     : Powerful interactive shell
+Description :
+The zsh shell is a command interpreter usable as an interactive login
+shell and as a shell script command processor.  Zsh resembles the ksh
+shell (the Korn shell), but includes many enhancements.  Zsh supports
+command line editing, built-in spelling correction, programmable
+command completion, shell functions (with autoloading), a history
+mechanism, and more.
+
+例3 查看未安装的软件包信息
+[root@qiaolima Packages]# rpm -qpi zip-3.0-10.el7.x86_64.rpm
+警告：zip-3.0-10.el7.x86_64.rpm: 头V3 RSA/SHA256 Signature, 密钥 ID fd431d51: NOKEY
+Name        : zip
+Version     : 3.0
+Release     : 10.el7
+Architecture: x86_64
+Install Date: (not installed)
+Group       : Applications/Archiving
+Size        : 815045
+License     : BSD
+Signature   : RSA/SHA256, Thu 03 Apr 2014 06:52:17 AM CST, Key ID 199e2f91fd431d51
+Source RPM  : zip-3.0-10.el7.src.rpm
+Build Date  : Tue 28 Jan 2014 06:35:49 AM CST
+Build Host  : x86-019.build.eng.bos.redhat.com
+Relocations : (not relocatable)
+Packager    : Red Hat, Inc. <http://bugzilla.redhat.com/bugzilla>
+Vendor      : Red Hat, Inc.
+URL         : http://www.info-zip.org/Zip.html
+Summary     : A file compression and packaging utility compatible with PKZIP
+Description :
+The zip program is a compression and file packaging utility.  Zip is
+analogous to a combination of the UNIX tar and compress commands and
+is compatible with PKZIP (a compression and file packaging utility for
+MS-DOS systems).
+
+Install the zip package if you need to compress files using the zip
+program.
+
+
+例4：查看某个命令属于哪个安装包
+ 
+
+例5：查看已经安装软件包安装了哪些文件和目录
+
+ 
+
+例6 查看软件包的依赖性
+ 
+
+ rpm包升级 
+用法：rpm 【参数】 包名
+q	–U  package.rpm      更新一个RPM包但不改变其配置文件
+q	-F   package.rpm      更新一个确定已经安装的rpm包
+
+rpm包卸载
+用法：rpm –e（erase） 包名
+参数： 
+	--nodeps 忽略依赖 
+例如1：
+无依赖关系，正常卸载
+[root@qiaolima  ~]# rpm -q zsh
+zsh-5.0.2-14.el7.x86_64
+[root@qiaolima  ~]# rpm -e zsh
+[root@qiaolima  ~]# rpm -q zsh
+未安装软件包 zsh
+例2：有依赖关系卸载
+ 
+
+ RPM包提取文件
+rpm2cpio 软件包名 | cpio –idv .文件的绝对路径
+说明：
+	cpio命令主要是用来建立或者还原备份档的工具程序，cpio命令可以复制文件到归档包中，或者从归档包中复制文件。
+			-i 还原，提取
+			-d 如果有需要cpio会自行建立目录
+			-v  显示还原过程
+	rpm2cpio:是一个转换格式命令
+[root@qiaolima  bin]# which ls
+/usr/bin/ls 
+[root@qiaolima  bin]# mv /bin/ls  /tmp
+[root@qiaolima  mnt]# rpm2cpio /mnt/Packages/coreutils-8.22-15.el7.x86_64.rpm | cpio -idv  ./bin/ls
+28579 块
+也就是说你查出哪个文件或命令缺失，那个你后面就写这个文件或命令的绝对路径 
+前面加那个点代表在当前目录中生成一个和你要恢复的文件路径一样的东西 
+[root@qiaolima  mnt]# ls
+usr
+[root@qiaolima  mnt]# cd /bin/
+[root@qiaolima  bin]# ls
+ls
+[root@qiaolima  bin]# mv ls /bin
+
+
+签名验证	
+导入RPM-GPG-KEY后， 安装rpm包时，对rpm的签名进行验证
+签名和加密不是一个概念
+GPG在Linux上的应用主要是实现官方发布的包的签名机制。
+GPG分为公钥及私钥。
+公钥：顾名思意，即可共享的密钥，主要用于验证私钥加密的数据及签名要发送给私钥方的数据。
+私钥：由本地保留的密钥，用于签名本地数据及验证用公钥签名的数据
+例如：验证一个RPM包的签名
+[root@qiaolima  /]# cd /mnt/Packages/
+[root@qiaolima  Packages]# rpm -K lrzsz-0.12.20-36.el7.x86_64.rpm 
+lrzsz-0.12.20-36.el7.x86_64.rpm: RSA sha1 (MD5) PGP md5 不正确
+[root@qiaolima  Packages]# rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release 
+[root@qiaolima  Packages]# rpm -K lrzsz-0.12.20-36.el7.x86_64.rpm 
+lrzsz-0.12.20-36.el7.x86_64.rpm: rsa sha1 (md5) pgp md5 确定
+
+
+查看已经安装的密钥
+[root@qiaolima  Packages]# rpm -qa gpg-pubkey*
+gpg-pubkey-2fa658e0-45700c69
+gpg-pubkey-fd431d51-4ae0493b
+[root@qiaolima  Packages]# rpm -qi gpg-pubkey-2fa658e0-45700c69
+Name        : gpg-pubkey
+Version     : 2fa658e0
+Release     : 45700c69
+Architecture: (none)
+Install Date: Tue 06 Dec 2016 10:09:45 PM CST
+Group       : Public Keys
+Size        : 0
+License     : pubkey
+Signature   : (none)
+Source RPM  : (none)
+Build Date  : Fri 01 Dec 2006 07:05:13 PM CST
+Build Host  : localhost
+Relocations : (not relocatable)
+Packager    : Red Hat, Inc. (auxiliary key) <security@redhat.com>
+Summary     : gpg(Red Hat, Inc. (auxiliary key) <security@redhat.com>)
+Description :
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: rpm-4.11.3 (NSS-3)
+
+mQGiBEVwDGkRBACwPhZIpvkjI8wV9sFTDoqyPLx1ub8Sd/w+YuI5Ovm49mvvEQVT
+VLg8FgE5JlST59AbsLDyVtRa9CxIvN5syBVrWWWtHtDnnylFBcqG/A6J3bI4E9/A
+UtSL5Zxbav0+utP6f3wOpxQrxc+WIDVgpurdBKAQ3dsobGBqypeX6FXZ5wCgou6C
+yZpGIBqosJaDWLzNeOfb/70D/1thLkQyhW3JJ6cHCYJHNfBShvbLWBf6S231mgmu
+MyMlt8Kmipc9bw+saaAkSkVsQ/ZbfjrWB7e5kbMruKLVrH+nGhamlHYUGyAPtsPg
+Uj/NUSj5BmrCsOkMpn43ngTLssE9MLhSPj2nIHGFv9B+iVLvomDdwnaBRgQ1aK8z
+z6MAA/406yf5yVJ/MlTWs1/68VwDhosc9BtU1V5IE0NXgZUAfBJzzfVzzKQq6zJ2
+eZsMLhr96wbsW13zUZt1ing+ulwh2ee4meuJq6h/971JspFY/XBhcfq4qCNqVjsq
+SZnWoGdCO6J8CxPIemD2IUHzjoyyeEj3RVydup6pcWZAmhzkKrQzUmVkIEhhdCwg
+SW5jLiAoYXV4aWxpYXJ5IGtleSkgPHNlY3VyaXR5QHJlZGhhdC5jb20+iF4EExEC
+AB4FAkVwDGkCGwMGCwkIBwMCAxUCAwMWAgECHgECF4AACgkQRWiciC+mWOC1rQCg
+ooNLCFOzNPcvhd9Za8C801HmnsYAniCw3yzrCqtjYnxDDxlufH0FVTwX
+=d/bm
+-----END PGP PUBLIC KEY BLOCK-----
+
+
+
+YUM的使用
+	yum（全称为 Yellow dog Updater, Modified）是一个前端软件包管理器。基于RPM包管理，能够从指定的服务器自动下载RPM包并且安装，可以自动处理依赖性关系，并且一次安装所有依赖的软体包，无须繁琐地一次次下载、安装。yum提供了查找、安装、删除某一个、一组甚至全部软件包的命令，而且命令简洁而又好记
+YUM：解决依赖关系问题，自动下载软件包，它是基于C/S架构
+		C=client			S=ftp\http\file
+YUM源分本地源和网络源，我们也说配置它的软件存储库
+[root@qiaolima  yum.repos.d]#yum repolist all   --查看所有源
+[root@qiaolima  yum.repos.d]# yum-config-manager --enable xx (yum源的名字)  --启用指定的源
+[root@qiaolima  yum.repos.d]# yum-config-manager --disable xx  (yum源的名字)   --禁止启动指定的源
+
+配置YUM源
+位置：
+ 
+
+注意：如果有基础的可以在参考文件上修改，没有基础的全部删除自己手工写一个
+YUM配置文件的格式必须以.repo结尾
+网络YUM源大家可以网上去源分享中心下载一下修改
+配置一个本地YUM源
+ 
+
+ 
+如果需要验证Key，就写成下面这样：
+ 
+YUM使用
+清空yum缓存
+[root@qiaolima  yum.repos.d]# yum clean all
+ 
+生成列表
+[root@qiaolima  ~]# yum list|more
+
+ 
+
+
+注意的几个小问题：
+q	确定光盘是否链接
+q	光盘是否挂载
+q	配置文件中格式是否正确，字母，符号有没有少写,挂载点和配置文件中设置的是否一致
+网络源需要联网，操作和RPM类似，只是会自动安装依赖项。
+
+
+主要操作：
+1）	安装 yum  install  -y
+[root@qiaolima  yum.repos.d]# yum -y install httpd
+已加载插件：langpacks, product-id, search-disabled-repos, subscription-manager
+This system is not registered to Red Hat Subscription Management. You can use subscription-manager to register.
+正在解决依赖关系
+--> 正在检查事务
+---> 软件包 httpd.x86_64.0.2.4.6-40.el7 将被 安装
+--> 解决依赖关系完成
+
+依赖关系解决
+
+==================================================================================
+ Package          架构              版本                    源               大小
+==================================================================================
+正在安装:
+ httpd            x86_64            2.4.6-40.el7            base            1.2 M
+
+事务概要
+==================================================================================
+安装  1 软件包
+
+总下载量：1.2 M
+安装大小：3.7 M
+Downloading packages:
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+警告：RPM 数据库已被非 yum 程序修改。
+  正在安装    : httpd-2.4.6-40.el7.x86_64                                     1/1 
+  验证中      : httpd-2.4.6-40.el7.x86_64                                     1/1 
+
+已安装:
+  httpd.x86_64 0:2.4.6-40.el7                                                     
+
+完毕！
+
+
+2) 检测升级 yum  check-update
+
+
+3) 升级 yum  update
+
+
+4) 软件包查询 yum  list
+[root@qiaolima  ~]# yum list http*
+已加载插件：langpacks, product-id, search-disabled-repos, subscription-manager
+This system is not registered to Red Hat Subscription Management. You can use subscription-manager to register.
+已安装的软件包
+httpd.x86_64                                   2.4.6-40.el7                    @base
+httpd-tools.x86_64                             2.4.6-40.el7                    @base
+可安装的软件包
+httpcomponents-client.noarch                   4.2.5-5.el7_0                   base 
+httpcomponents-core.noarch                     4.2.4-6.el7                     base 
+httpd-devel.x86_64                             2.4.6-40.el7                    base 
+httpd-manual.noarch                            2.4.6-40.el7                    base
+5) 软件包信息 yum  info
+[root@qiaolima  ~]# yum info httpd
+已加载插件：langpacks, product-id, search-disabled-repos, subscription-manager
+This system is not registered to Red Hat Subscription Management. You can use subscription-manager to register.
+已安装的软件包
+名称    ：httpd
+架构    ：x86_64
+版本    ：2.4.6
+发布    ：40.el7
+大小    ：3.7 M
+源    ：installed
+来自源：base
+简介    ： Apache HTTP Server
+网址    ：http://httpd.apache.org/
+协议    ： ASL 2.0
+描述    ： The Apache HTTP Server is a powerful, efficient, and extensible
+         : web server.
+
+
+6）查看与指定的路径名匹配的软件包
+[root@qiaolima  ~]# yum provides /var/www/html/
+已加载插件：langpacks, product-id, search-disabled-repos, subscription-manager
+This system is not registered to Red Hat Subscription Management. You can use subscription-manager to register.
+httpd-2.4.6-40.el7.x86_64 : Apache HTTP Server
+源    ：base
+匹配来源：
+文件名    ：/var/www/html/
+1:php-pear-1.9.4-21.el7.noarch : PHP Extension and Application Repository framework
+源    ：base
+匹配来源：
+文件名    ：/var/www/html/
+httpd-2.4.6-40.el7.x86_64 : Apache HTTP Server
+源    ：@base
+匹配来源：
+文件名    ：/var/www/html/
+
+
+7) 卸载 yum  remove 包名
+[root@qiaolima  yum.repos.d]# yum -y remove httpd
+已加载插件：langpacks, product-id, search-disabled-repos, subscription-manager
+This system is not registered to Red Hat Subscription Management. You can use subscription-manager to register.
+正在解决依赖关系
+--> 正在检查事务
+---> 软件包 httpd.x86_64.0.2.4.6-40.el7 将被 删除
+--> 解决依赖关系完成
+
+依赖关系解决
+
+==================================================================================
+ Package         架构             版本                      源               大小
+==================================================================================
+正在删除:
+ httpd           x86_64           2.4.6-40.el7              @base           3.7 M
+
+事务概要
+==================================================================================
+移除  1 软件包
+
+安装大小：3.7 M
+Downloading packages:
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  正在删除    : httpd-2.4.6-40.el7.x86_64                                     1/1 
+  验证中      : httpd-2.4.6-40.el7.x86_64                                     1/1 
+
+删除:
+  httpd.x86_64 0:2.4.6-40.el7                                                     
+
+完毕！
+8) 帮助 yum  -help、man  yum
+
+安装一组软件包
+查看包组
+[root@qiaolima  ~]# yum grouplist
+已加载插件：langpacks, product-id, search-disabled-repos, subscription-manager
+This system is not registered to Red Hat Subscription Management. You can use subscription-manager to register.
+没有安装组信息文件
+Maybe run: yum groups mark convert (see man yum)
+可用的环境分组：
+   最小安装
+   基础设施服务器
+   文件及打印服务器
+   基本网页服务器
+   虚拟化主机
+   带 GUI 的服务器
+可用组：
+   传统 UNIX 兼容性
+   兼容性程序库
+   图形管理工具
+   安全性工具
+   开发工具
+   控制台互联网工具
+   智能卡支持
+   科学记数法支持
+   系统管理
+   系统管理工具
+完成
+显示组的相关信息
+[root@qiaolima  ~]# yum groupinfo 虚拟化主机
+已加载插件：langpacks, product-id, search-disabled-repos, subscription-manager
+This system is not registered to Red Hat Subscription Management. You can use subscription-manager to register.
+没有安装组信息文件
+Maybe run: yum groups mark convert (see man yum)
+
+环境分组：虚拟化主机
+环境 ID：virtualization-host-environment
+ 描述：最小虚拟化主机。
+必备组：
+   +base
+   +core
+   +virtualization-hypervisor
+   +virtualization-tools
+可选组：
+   +debugging
+   +network-file-system-client
+   +remote-system-management
+   +virtualization-platform
+
+安装一组包
+[root@qiaolima  ~]# yum  –y  groupinstall "base"
+ 
+
+查看历史记录
+[root@qiaolima  ~]# cd /var/log/
+[root@qiaolima  log]# tail yum.log
+Feb 08 21:52:18 Installed: finger-0.17-52.el7.x86_64
+[root@qiaolima  ~]# yum history 
+
+ 
+
+
+撤销事务
+[root@qiaolima  log]# yum history undo x(执行的ID)（相当于卸载）
+
+
+
+
+
+
+
+
+
+
